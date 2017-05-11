@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 -->
 <?php
     $path='langManagementSystem/';
+    $toRoot="";
     require_once "$path"."lang_responsive.php";
 ?>
 <html>
