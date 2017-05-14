@@ -41,12 +41,16 @@ if(!empty($_GET['lang'])){
 }
 if(empty($lang)||mb_strlen($lang)>$configuration['maxLanguageCodeLength']||!file_exists($path."lang_files/".$lang.".json")){
     $lang=$configuration['defautLanguageCode'];
+    $def_lang_content=array();
+}else{
+    $def_lang_content=json_decode(file_get_contents($path."lang_files/".$configuration['defautLanguageCode'].".json"),true);
 }
 
 /**
  * Get the language content to display
  */
 $lang_content=json_decode(file_get_contents($path."lang_files/".$lang.".json"),true);
+
 
 /**
  * recognize if admin is logged
@@ -80,17 +84,23 @@ if($psswd==$langPsswd){
  */
 function lang_textarea($id) {
     global $lang_content;
+    global $def_lang_content;
     global $admin;
     global $lang_textareaIds;
 	if(isset($lang_content[$id])){
 		$text_content=$lang_content[$id];
+                $warin_if_undefined="";
+	}else if(!isset($def_lang_content[$id])){
+		$text_content="";
+                $warin_if_undefined="<SUP>undefined</SUP>";
 	}else{
-		$text_content="Undefined Textcontent for this language";
+		$text_content=$def_lang_content[$id];
+                $warin_if_undefined="<SUP>undefined->defaut language</SUP>";
 	}
     if(!$admin){
         echo "<span id='$id'>$text_content</span>";
     }else{
-        echo "<span id='$id' contenteditable='true' class='adminEditableDiv'>$text_content</span>";
+        echo "$warin_if_undefined<span id='$id' contenteditable='true' class='adminEditableDiv'>$text_content</span>";
         $lang_textareaIds[]=$id;
     }
 }
@@ -102,9 +112,10 @@ function lang_endFile(){
     global $admin;
     global $lang_textareaIds;
     global $configuration;
+    global $path;
     $datas= serialize($lang_textareaIds);
     if($admin){
-        echo "<script src='".$configuration['defaultPath']."langManagSyst_Setup.js.php?ids=$datas'></script>";
+        echo "<script src='".$path."langManagSyst_Setup.js.php?ids=$datas&path=$path'></script>";
     }
 }
 
@@ -116,7 +127,7 @@ function create_SelectLanguage($langs) {
     global $lang;
     global $path;
     if(file_exists($path."lang_files/".$lang.".png")){
-        $style=" style='background-image: url(langManagementSystem/lang_files/$lang.png)'";
+        $style=" style='background-image: url($path"."lang_files/$lang.png)'";
     }else{$style="";}
     echo "<select id='chooseLanguage'$style onchange='window.location.href+=\"&lang=\"+this.value;'>";
     foreach ($langs as $langCode => $langName) {

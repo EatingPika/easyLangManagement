@@ -25,7 +25,7 @@ function lang_textContentUpdate(id){
     fd = new FormData();
     fd.append( 'id', id );
     fd.append( 'new_text', document.getElementById(id).innerHTML );
-    xhr.open("POST", "langManagementSystem/update_lang_content.php", true);
+    xhr.open("POST", "<?php echo filter_input(INPUT_GET, 'path',FILTER_SANITIZE_STRING);?>update_lang_content.php", true);
     xhr.send(fd);
 }
 
